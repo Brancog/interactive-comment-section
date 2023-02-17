@@ -1,0 +1,21 @@
+// COLORS
+
+$color-moderate-blue: #5457b6;
+$color-soft-red: hsl(358, 79%, 66%);
+$color-light-grayish-blue: hsl(239, 57%, 85%);
+$color-pale-red: hsl(357, 100%, 86%);
+
+$color-dark-blue: hsl(212, 24%, 26%);
+$color-grayish-blue: hsl(211, 10%, 45%);
+$color-light-gray: hsl(223, 19%, 93%);
+$color-very-light-gray: hsl(228, 33%, 97%);
+$color-white: hsl(0, 0%, 100%);
+
+// TYPOGRAPHY
+@import url("https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;700&display=swap");
+
+$font-size-default: 1rem;
+$font-family-default: "Rubik", sans-serif;
+$font-weight-regular: 400;
+$font-weight-semi-bold: 500;
+$font-weight-bold: 700;

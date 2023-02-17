@@ -1,0 +1,8 @@
+@import "variables";
+@import "utility";
+
+body {
+  height: 100%;
+  background-color: $color-very-light-gray;
+  font-family: $font-family-default;
+}
