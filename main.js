@@ -133,7 +133,7 @@ function renderComments(data) {
               </div>
             </div>
             <div class="comment-box__cur-user-buttons">
-              <a class="comment-box__delete">
+              <a class="comment-box__delete comment-box__delete-btn">
                 <img
                   class="comment-box__delete-btn"
                   src="images/icon-delete.svg"

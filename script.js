@@ -17,6 +17,7 @@ modalButtons.addEventListener("click", (e) => {
 // EVENT LISTENER FOR COMMENT DELETE BUTTON
 curUserButtons.addEventListener("click", (e) => {
   if (e.target.classList.contains("comment-box__delete-btn")) {
+    console.log("delete clicked");
     modal.showModal();
   }
   if (e.target.classList.contains("comment-box__edit-btn")) {
