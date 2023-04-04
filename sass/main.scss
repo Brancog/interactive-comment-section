@@ -1,8 +1,13 @@
 @import "variables";
 @import "utility";
-
+@import "comments";
+@import "user-inputs";
+@import "modal";
 body {
   height: 100%;
   background-color: $color-very-light-gray;
   font-family: $font-family-default;
+}
+p {
+  font-size: $font-size-default;
 }

@@ -1,0 +1,62 @@
+.modal {
+  margin: 0 auto;
+  position: fixed;
+  top: 50%;
+  transform: translateY(-50%);
+  border: none;
+  border-radius: 0.5rem;
+  padding: 1.5rem;
+
+  &__heading {
+    color: $color-dark-blue;
+    font-size: 1.5rem;
+    font-weight: $font-weight-semi-bold;
+  }
+
+  &__text-content {
+    line-height: 1.5;
+    margin-top: 1rem;
+    color: $color-grayish-blue;
+  }
+
+  &__buttons {
+    margin-top: 1.5rem;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  &__btn {
+    padding: 0.8rem 1rem;
+    border-radius: 0.5rem;
+    text-transform: uppercase;
+    color: $color-white;
+    font-weight: $font-weight-semi-bold;
+    font-size: 1.125rem;
+
+    &--yes {
+      background-color: $color-soft-red;
+    }
+    &--no {
+      background-color: $color-grayish-blue;
+    }
+
+    &:hover {
+      filter: opacity(60%);
+    }
+  }
+}
+
+.modal::backdrop {
+  background: rgba($color: #000000, $alpha: 0.5);
+}
+
+@media (min-width: 56.25em) {
+  .modal {
+    max-width: 25rem;
+    padding: 1.8;
+
+    &__btn {
+      padding: 0.8rem 1.8rem;
+    }
+  }
+}

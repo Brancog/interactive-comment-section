@@ -1,0 +1,72 @@
+.add-comment {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: auto auto;
+
+  grid-template-areas:
+    "text-input text-input"
+    "user-img send-btn";
+
+  padding: 1rem;
+  background-color: $color-white;
+  margin-top: 1rem;
+  border-radius: 0.5rem;
+
+  &__user-img-wrap {
+    width: 2rem;
+    height: 2rem;
+    grid-area: user-img;
+    transform: translateY(25%);
+
+    img {
+      width: 100%;
+      height: auto;
+    }
+  }
+
+  &__text-input {
+    width: 100%;
+    height: auto;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    border-color: $color-light-gray;
+    border-radius: 0.5rem;
+    resize: none;
+    grid-area: text-input;
+    color: $color-dark-blue;
+  }
+
+  &__send-btn {
+    width: fit-content;
+    height: fit-content;
+    margin-left: auto;
+    background-color: $color-moderate-blue;
+    color: $color-white;
+    font-weight: $font-weight-semi-bold;
+    padding: 1rem 2rem;
+    border-radius: 0.5rem;
+    text-transform: uppercase;
+    border: none;
+    grid-area: send-btn;
+    cursor: pointer;
+
+    &:hover {
+      filter: opacity(60%);
+    }
+  }
+}
+
+@media (min-width: 56.25em) {
+  .add-comment {
+    padding: 1.5rem;
+    grid-template-columns: max-content 1fr max-content;
+    grid-template-rows: none;
+    grid-template-areas: "user-img text-input send-btn";
+    gap: 1rem;
+
+    &__text-input {
+      margin: 0;
+      width: 100%;
+    }
+  }
+}
