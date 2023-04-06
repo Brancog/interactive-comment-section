@@ -248,25 +248,26 @@ function deployEventListeners(data) {
     }
   });
   // EVENT LISTENER FOR COMMENT DELETE BUTTON
-  if (!curUserButtons) return;
-  curUserButtons.addEventListener("click", (e) => {
-    idToDelete = e.target.closest(".comment-box").getAttribute("id");
+  if (curUserButtons) {
+    curUserButtons.addEventListener("click", (e) => {
+      idToDelete = e.target.closest(".comment-box").getAttribute("id");
 
-    if (e.target.closest("a").classList.contains("comment-box__delete-btn")) {
-      modal.showModal();
-    }
-    if (e.target.closest("a").classList.contains("comment-box__edit-btn")) {
-      console.log("edit button clicked");
-    }
-  });
+      if (e.target.closest("a").classList.contains("comment-box__delete-btn")) {
+        modal.showModal();
+      }
+      if (e.target.closest("a").classList.contains("comment-box__edit-btn")) {
+        console.log("edit button clicked");
+      }
+    });
+  }
 
   // EVENT LISTENERS FOR COMMENT RATING BUTTONS
   commentRateBtns.forEach((rateBtn) =>
-    rateBtn.addEventListener("click", rateComment)
+    rateBtn.addEventListener("click", updateCommentScore)
   );
 
   // COMMENT RATING FUNCTION
-  function rateComment(e) {
+  function updateCommentScore(e) {
     const ratingVal = this.closest(".comment-box__rate").querySelector(
       ".comment-box__rate-value"
     );
