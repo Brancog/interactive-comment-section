@@ -33,7 +33,7 @@
   &__title {
     display: flex;
     align-items: center;
-    gap: 1rem;
+    // gap: 1rem;
     grid-area: title;
 
     a {
@@ -65,15 +65,18 @@
 
   &__you-badge {
     color: $color-white;
+    font-size: 0.8em;
     font-weight: $font-weight-semi-bold;
     line-height: 1.2;
     padding: 0.2rem 0.5rem;
     background-color: $color-moderate-blue;
     border-radius: 3px;
+    margin-left: 0.5rem;
   }
 
   &__time-ago {
     color: $color-grayish-blue;
+    margin-left: 1rem;
   }
   &__text-content {
     color: $color-grayish-blue;
@@ -141,7 +144,7 @@
     }
   }
 
-  &__edit {
+  &__edit-btn {
     cursor: pointer;
     color: $color-moderate-blue;
     font-weight: $font-weight-semi-bold;

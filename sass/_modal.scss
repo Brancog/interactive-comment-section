@@ -6,6 +6,8 @@
   border: none;
   border-radius: 0.5rem;
   padding: 1.5rem;
+  width: calc(100% - 2rem);
+  max-width: 25rem;
 
   &__heading {
     color: $color-dark-blue;
@@ -23,6 +25,7 @@
     margin-top: 1.5rem;
     display: flex;
     justify-content: space-between;
+    gap: 0.5rem;
   }
 
   &__btn {
@@ -50,7 +53,7 @@
   background: rgba($color: #000000, $alpha: 0.5);
 }
 
-@media (min-width: 56.25em) {
+@media (min-width: 27em) {
   .modal {
     max-width: 25rem;
     padding: 1.8;

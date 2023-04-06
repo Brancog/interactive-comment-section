@@ -1,4 +1,10 @@
+"use strict";
+
+//  VARIABLE DECLARATIONS
 const commentsContainer = document.querySelector(".comments");
+const body = document.querySelector("body");
+const modal = document.querySelector(".modal");
+const modalButtons = document.querySelector(".modal__buttons");
 
 init();
 
@@ -8,8 +14,9 @@ async function init() {
     await fetchData("data.json");
   }
 
-  const data = await localStorage.getItem("data");
+  let data = localStorage.getItem("data");
   renderComments(data);
+  deployEventListeners(data);
 }
 
 async function fetchData(url) {
@@ -25,7 +32,6 @@ function renderComments(data) {
   const curUser = dataObj.currentUser;
 
   //  LOOP OVER THE COMMENTS ARRAY AND GENERATE HTML ELEMENTS
-
   for (const comment of comments) {
     const commentBox = document.createElement("div");
     commentBox.classList.add("comment-box");
@@ -135,20 +141,20 @@ function renderComments(data) {
             <div class="comment-box__cur-user-buttons">
               <a class="comment-box__delete comment-box__delete-btn">
                 <img
-                  class="comment-box__delete-btn"
+                  class=""
                   src="images/icon-delete.svg"
                   alt=""
                 />
-                <span class="comment-box__delete-btn">Delete</span>
+                <span class="">Delete</span>
               </a>
-              <div class="comment-box__edit">
+              <a class="comment-box__edit-btn">
                 <img
-                  class="comment-box__edit-btn"
+                  class=""
                   src="images/icon-edit.svg"
                   alt=""
                 />
-                <span class="comment-box__edit-btn">Edit</span>
-              </div>
+                <span class="">Edit</span>
+              </a>
             </div>
 `;
         } else {
@@ -198,6 +204,80 @@ function renderComments(data) {
 
         replyWrap.appendChild(commentBoxReply);
       }
+    }
+  }
+}
+
+function deployEventListeners(data) {
+  const curUserButtons = document.querySelector(
+    ".comment-box__cur-user-buttons"
+  );
+  const commentRateBtns = document.querySelectorAll(".comment-box__rate-btn");
+  let idToDelete;
+  // EVENT LISTENER FOR MODAL BUTTONS
+  modalButtons.addEventListener("click", (e) => {
+    if (e.target.classList.contains("modal__btn--no")) {
+      e.preventDefault();
+      modal.close();
+    }
+    if (e.target.classList.contains("modal__btn--yes")) {
+      e.preventDefault();
+      document.getElementById(idToDelete).remove();
+      const comments = JSON.parse(data).comments;
+
+      // DELETE THE COMMENT FROM DATA OBJECT AND UPDATE LOCAL STORAGE
+      comments.forEach(function (comment, i) {
+        if (comment.id === +idToDelete) {
+          comments[i].splice(i, 1);
+        }
+        comment.replies.forEach(function (reply, i) {
+          if (reply.id === +idToDelete) {
+            comment.replies.splice(i, 1);
+          }
+        });
+      });
+      console.log(JSON.parse(data));
+      console.log(comments);
+      const newData = {
+        currentUser: JSON.parse(data).currentUser,
+        comments: comments,
+      };
+      localStorage.setItem("data", JSON.stringify(newData));
+      e.preventDefault();
+      modal.close();
+    }
+  });
+  // EVENT LISTENER FOR COMMENT DELETE BUTTON
+  if (!curUserButtons) return;
+  curUserButtons.addEventListener("click", (e) => {
+    idToDelete = e.target.closest(".comment-box").getAttribute("id");
+
+    if (e.target.closest("a").classList.contains("comment-box__delete-btn")) {
+      modal.showModal();
+    }
+    if (e.target.closest("a").classList.contains("comment-box__edit-btn")) {
+      console.log("edit button clicked");
+    }
+  });
+
+  // EVENT LISTENERS FOR COMMENT RATING BUTTONS
+  commentRateBtns.forEach((rateBtn) =>
+    rateBtn.addEventListener("click", rateComment)
+  );
+
+  // COMMENT RATING FUNCTION
+  function rateComment(e) {
+    const ratingVal = this.closest(".comment-box__rate").querySelector(
+      ".comment-box__rate-value"
+    );
+    const rateActionBtn = e.target.closest(".comment-box__rate-btn");
+
+    if (rateActionBtn.classList.contains("comment-box__rate--plus-wrap")) {
+      ratingVal.textContent = +ratingVal.textContent + 1;
+    }
+
+    if (rateActionBtn.classList.contains("comment-box__rate--minus-wrap")) {
+      ratingVal.textContent = +ratingVal.textContent - 1;
     }
   }
 }

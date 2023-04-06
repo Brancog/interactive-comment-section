@@ -59,7 +59,6 @@
 .comment-box__title {
   display: flex;
   align-items: center;
-  gap: 1rem;
   grid-area: title;
 }
 .comment-box__title a {
@@ -84,14 +83,17 @@
 }
 .comment-box__you-badge {
   color: hsl(0, 0%, 100%);
+  font-size: 0.8em;
   font-weight: 500;
   line-height: 1.2;
   padding: 0.2rem 0.5rem;
   background-color: #5457b6;
   border-radius: 3px;
+  margin-left: 0.5rem;
 }
 .comment-box__time-ago {
   color: hsl(211, 10%, 45%);
+  margin-left: 1rem;
 }
 .comment-box__text-content {
   color: hsl(211, 10%, 45%);
@@ -147,12 +149,12 @@
 .comment-box__delete:hover {
   filter: opacity(60%);
 }
-.comment-box__edit {
+.comment-box__edit-btn {
   cursor: pointer;
   color: #5457b6;
   font-weight: 500;
 }
-.comment-box__edit:hover {
+.comment-box__edit-btn:hover {
   filter: opacity(60%);
 }
 .comment-box__reply {
@@ -275,6 +277,8 @@
   border: none;
   border-radius: 0.5rem;
   padding: 1.5rem;
+  width: calc(100% - 2rem);
+  max-width: 25rem;
 }
 .modal__heading {
   color: hsl(212, 24%, 26%);
@@ -290,6 +294,7 @@
   margin-top: 1.5rem;
   display: flex;
   justify-content: space-between;
+  gap: 0.5rem;
 }
 .modal__btn {
   padding: 0.8rem 1rem;
@@ -313,7 +318,7 @@
   background: rgba(0, 0, 0, 0.5);
 }
 
-@media (min-width: 56.25em) {
+@media (min-width: 27em) {
   .modal {
     max-width: 25rem;
     padding: 1.8;
