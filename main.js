@@ -35,6 +35,12 @@ function renderComments(data) {
   for (const comment of comments) {
     const commentBox = document.createElement("div");
     commentBox.classList.add("comment-box");
+    const addCommentReply = document.createElement("div");
+    addCommentReply.classList.add(
+      "add-comment",
+      "add-comment--reply",
+      "inactive"
+    );
 
     commentBox.setAttribute("id", `${comment.id}`);
     commentBox.innerHTML = `
@@ -72,14 +78,29 @@ function renderComments(data) {
               />
             </div>
           </div>
-          <div class="comment-box__reply">
+          <a class="comment-box__reply">
             <img src="images/icon-reply.svg" alt="" />
             <span>Reply</span>
-          </div>
+          </a>
         </div>
     `;
 
+    addCommentReply.innerHTML = `
+            <textarea
+              name="comment"
+              class="add-comment__text-input"
+              cols=""
+              rows="3"
+              placeholder="Add a comment..."
+            ></textarea>
+            <div class="add-comment__user-img-wrap">
+              <img src="images/avatars/image-juliusomo.webp" alt="user image" />
+            </div>
+            <button class="add-comment__send-btn add-comment__send-btn--reply">reply</button>
+    `;
+
     commentsContainer.appendChild(commentBox);
+    commentsContainer.appendChild(addCommentReply);
 
     // CHECK IF A COMMENT HAS REPLIES AND RENDER THEM IF IT DOES
     if (comment.replies.length > 0) {
@@ -93,6 +114,27 @@ function renderComments(data) {
       replyWrap.appendChild(verticalLine);
 
       for (const reply of comment.replies) {
+        const addCommentReply = document.createElement("div");
+        addCommentReply.classList.add(
+          "add-comment",
+          "add-comment--reply",
+          "inactive"
+        );
+
+        addCommentReply.innerHTML = `
+              <textarea
+                name="comment"
+                class="add-comment__text-input"
+                cols=""
+                rows="3"
+                placeholder="Add a comment..."
+              ></textarea>
+              <div class="add-comment__user-img-wrap">
+                <img src="images/avatars/image-juliusomo.webp" alt="user image" />
+              </div>
+              <button class="add-comment__send-btn add-comment__send-btn--reply">reply</button>
+      `;
+
         const commentBoxReply = document.createElement("div");
         commentBoxReply.setAttribute("id", `${reply.id}`);
 
@@ -203,16 +245,23 @@ function renderComments(data) {
         }
 
         replyWrap.appendChild(commentBoxReply);
+        replyWrap.appendChild(addCommentReply);
       }
     }
   }
 }
 
 function deployEventListeners(data) {
-  const curUserButtons = document.querySelector(
+  let comments = JSON.parse(data).comments;
+  const curUserButtons = document.querySelectorAll(
     ".comment-box__cur-user-buttons"
   );
+  const commentReplyBtns = document.querySelectorAll(".comment-box__reply");
+  const addCommentSendBtns = document.querySelectorAll(
+    ".add-comment__send-btn"
+  );
   const commentRateBtns = document.querySelectorAll(".comment-box__rate-btn");
+  let replyingTo = "";
   let idToDelete;
   // EVENT LISTENER FOR MODAL BUTTONS
   modalButtons.addEventListener("click", (e) => {
@@ -223,7 +272,6 @@ function deployEventListeners(data) {
     if (e.target.classList.contains("modal__btn--yes")) {
       e.preventDefault();
       document.getElementById(idToDelete).remove();
-      const comments = JSON.parse(data).comments;
 
       // DELETE THE COMMENT FROM DATA OBJECT AND UPDATE LOCAL STORAGE
       comments.forEach(function (comment, i) {
@@ -236,8 +284,7 @@ function deployEventListeners(data) {
           }
         });
       });
-      console.log(JSON.parse(data));
-      console.log(comments);
+
       const newData = {
         currentUser: JSON.parse(data).currentUser,
         comments: comments,
@@ -249,17 +296,126 @@ function deployEventListeners(data) {
   });
   // EVENT LISTENER FOR COMMENT DELETE BUTTON
   if (curUserButtons) {
-    curUserButtons.addEventListener("click", (e) => {
-      idToDelete = e.target.closest(".comment-box").getAttribute("id");
+    curUserButtons.forEach((curUserBtns) => {
+      curUserBtns.addEventListener("click", (e) => {
+        idToDelete = e.target.closest(".comment-box").getAttribute("id");
 
-      if (e.target.closest("a").classList.contains("comment-box__delete-btn")) {
-        modal.showModal();
-      }
-      if (e.target.closest("a").classList.contains("comment-box__edit-btn")) {
-        console.log("edit button clicked");
-      }
+        if (
+          e.target.closest("a").classList.contains("comment-box__delete-btn")
+        ) {
+          modal.showModal();
+        }
+        if (e.target.closest("a").classList.contains("comment-box__edit-btn")) {
+          console.log("edit button clicked");
+        }
+      });
     });
   }
+
+  // EVENT LISTENERS FOR COMMENT REPLY BUTTONS
+  commentReplyBtns.forEach((btn) => {
+    btn.addEventListener("click", (e) => {
+      e.preventDefault();
+      const addCommentReplies = document.querySelectorAll(
+        ".add-comment--reply"
+      );
+      addCommentReplies.forEach((replyInput) => {
+        replyInput.classList.add("inactive");
+      });
+
+      e.target.closest(".comment-box").nextSibling.classList.remove("inactive");
+      replyingTo = e.target
+        .closest(".comment-box")
+        .querySelector(".comment-box__user-name").textContent;
+      e.target
+        .closest(".comment-box")
+        .nextSibling.querySelector("textarea").value = `@${replyingTo}, `;
+      e.target
+        .closest(".comment-box")
+        .nextSibling.querySelector("textarea")
+        .focus();
+    });
+  });
+
+  // EVENT LISTENERS FOR SEND/REPLY COMMENT BUTTONS
+  addCommentSendBtns.forEach((btn) => {
+    btn.addEventListener("click", (e) => {
+      e.preventDefault();
+      // TAKE THE MAIN COMMENT TEXT,FILTER OUT REPLYING TO TAG
+      const newCommentText = e.target
+        .closest(".add-comment")
+        .querySelector("textarea")
+        .value.split(", ")
+        .pop();
+      // HIDE THE REPLY BOX
+      e.target.closest(".add-comment").classList.add("inactive");
+      // SELECT THE PREVIOUS COMMENT BOX AND ADD A NEW ONE JUST BENEATH
+
+      comments = JSON.parse(data).comments;
+
+      const repliedCommentId = +e.target
+        .closest(".add-comment")
+        .previousSibling.getAttribute("id");
+
+      const replyingToUser = e.target
+        .closest(".add-comment")
+        .previousSibling.querySelector(".comment-box__user-name").textContent;
+
+      const newReply = {
+        id: "",
+        content: newCommentText,
+        createdAt: "just now",
+        score: 0,
+        replyingTo: replyingToUser,
+        user: {
+          image: {
+            webp: JSON.parse(data).currentUser.image.webp,
+          },
+          username: JSON.parse(data).currentUser.username,
+        },
+      };
+
+      comments.forEach((comment) => {
+        if (comment.id === repliedCommentId) {
+          comment.replies.push(newReply);
+        }
+        if (comment.replies.length > 0) {
+          comment.replies.forEach((reply) => {
+            if (reply.id === repliedCommentId) {
+              comment.replies.push(newReply);
+            }
+          });
+        }
+      });
+
+      let commentIndexId = 1;
+      comments.forEach((comment) => {
+        comment.id = commentIndexId;
+        commentIndexId += 1;
+        if (comment.replies.length > 0) {
+          comment.replies.forEach((reply) => {
+            reply.id = commentIndexId;
+            commentIndexId += 1;
+          });
+        }
+      });
+
+      const newDataObj = {
+        currentUser: JSON.parse(data).currentUser,
+        comments: comments,
+      };
+
+      localStorage.setItem("data", JSON.stringify(newDataObj));
+
+      // REMOVE AND RE-RENDER ALL COMMENTS AND REPLIES
+      commentsContainer.innerHTML = "";
+      renderComments(localStorage.getItem("data"));
+      deployEventListeners(localStorage.getItem("data"));
+      // e.target
+      //   .closest(".add-comment")
+      //   .previousSibling.insertAdjacentHTML("afterend",newComment);
+    });
+  });
 
   // EVENT LISTENERS FOR COMMENT RATING BUTTONS
   commentRateBtns.forEach((rateBtn) =>
@@ -268,6 +424,12 @@ function deployEventListeners(data) {
 
   // COMMENT RATING FUNCTION
   function updateCommentScore(e) {
+    const newData = {
+      currentUser: JSON.parse(data).currentUser,
+      comments: comments,
+    };
+
+    const ratedCommentId = +e.target.closest(".comment-box").getAttribute("id");
     const ratingVal = this.closest(".comment-box__rate").querySelector(
       ".comment-box__rate-value"
     );
@@ -275,10 +437,36 @@ function deployEventListeners(data) {
 
     if (rateActionBtn.classList.contains("comment-box__rate--plus-wrap")) {
       ratingVal.textContent = +ratingVal.textContent + 1;
+
+      comments.forEach(function (comment, i) {
+        if (comment.id === ratedCommentId) {
+          comment.score += 1;
+          localStorage.setItem("data", JSON.stringify(newData));
+        }
+        comment.replies.forEach(function (reply, i) {
+          if (reply.id === ratedCommentId) {
+            reply.score += 1;
+            localStorage.setItem("data", JSON.stringify(newData));
+          }
+        });
+      });
     }
 
     if (rateActionBtn.classList.contains("comment-box__rate--minus-wrap")) {
       ratingVal.textContent = +ratingVal.textContent - 1;
+
+      comments.forEach(function (comment, i) {
+        if (comment.id === ratedCommentId) {
+          comment.score -= 1;
+          localStorage.setItem("data", JSON.stringify(newData));
+        }
+        comment.replies.forEach(function (reply, i) {
+          if (reply.id === ratedCommentId) {
+            reply.score -= 1;
+            localStorage.setItem("data", JSON.stringify(newData));
+          }
+        });
+      });
     }
   }
 }

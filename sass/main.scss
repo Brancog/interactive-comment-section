@@ -1,8 +1,8 @@
 @import "variables";
-@import "utility";
 @import "comments";
 @import "user-inputs";
 @import "modal";
+@import "utility";
 body {
   height: 100%;
   background-color: $color-very-light-gray;

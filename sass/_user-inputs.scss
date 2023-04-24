@@ -36,7 +36,8 @@
     color: $color-dark-blue;
   }
 
-  &__send-btn {
+  &__send-btn,
+  &__new-comment-btn {
     width: fit-content;
     height: fit-content;
     margin-left: auto;

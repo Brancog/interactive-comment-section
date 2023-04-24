@@ -22,6 +22,10 @@
   margin-top: 1rem;
 }
 
+.inactive {
+  display: none;
+}
+
 @media (min-width: 56.25em) {
   .reply-wrap {
     grid-template-columns: 5rem 1fr;
