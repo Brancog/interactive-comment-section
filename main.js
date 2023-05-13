@@ -35,6 +35,7 @@ function renderComments(data) {
   for (const comment of comments) {
     const commentBox = document.createElement("div");
     commentBox.classList.add("comment-box");
+
     const addCommentReply = document.createElement("div");
     addCommentReply.classList.add(
       "add-comment",
@@ -43,47 +44,107 @@ function renderComments(data) {
     );
 
     commentBox.setAttribute("id", `${comment.id}`);
-    commentBox.innerHTML = `
-    <div class="comment-box__title">
-            <a href="" class="comment-box__user">
-              <div class="comment-box__user-img-wrap">
-                <img
-                  src="${comment.user.image.webp}"
-                  alt="user image"
-                />
-              </div>
-              <span class="comment-box__user-name">${comment.user.username}</span>
-            </a>
-            <span class="comment-box__time-ago">${comment.createdAt}</span>
-          </div>
-          <div class="comment-box__text-content">
-            <p>
-              ${comment.content}
-            </p>
-          </div>
-          <div class="comment-box__rate">
-            <div class="comment-box__rate-btn comment-box__rate--plus-wrap">
+    if (comment.user.username === curUser.username) {
+      commentBox.classList.add("comment-box--admin");
+
+      commentBox.innerHTML = `
+  <div class="comment-box__title">
+          <a href="" class="comment-box__user">
+            <div class="comment-box__user-img-wrap">
               <img
-                src="images/icon-plus.svg"
-                alt=""
-                class="comment-box__rate--plus"
+                src="${comment.user.image.webp}"
+                alt="user image"
               />
             </div>
-            <span class="comment-box__rate-value">${comment.score}</span>
-            <div class="comment-box__rate-btn comment-box__rate--minus-wrap">
-              <img
-                src="images/icon-minus.svg"
-                alt=""
-                class="comment-box__rate--minus"
-              />
-            </div>
+            <span class="comment-box__user-name">${comment.user.username}</span>
+          </a>
+          <span class="comment-box__you-badge">you</span>
+          <span class="comment-box__time-ago">${comment.createdAt}</span>
+        </div>
+        <div class="comment-box__text-content">
+          <p>
+            ${comment.content}
+          </p>
+        </div>
+        <div class="comment-box__rate">
+          <div class="comment-box__rate-btn comment-box__rate--plus-wrap">
+            <img
+              src="images/icon-plus.svg"
+              alt=""
+              class="comment-box__rate--plus"
+            />
           </div>
-          <a class="comment-box__reply">
-            <img src="images/icon-reply.svg" alt="" />
-            <span>Reply</span>
+          <span class="comment-box__rate-value">${comment.score}</span>
+          <div class="comment-box__rate-btn comment-box__rate--minus-wrap">
+            <img
+              src="images/icon-minus.svg"
+              alt=""
+              class="comment-box__rate--minus"
+            />
+          </div>
+        </div>
+        <div class="comment-box__cur-user-buttons">
+          <a class="comment-box__delete comment-box__delete-btn">
+            <img
+              class=""
+              src="images/icon-delete.svg"
+              alt=""
+            />
+            <span class="">Delete</span>
+          </a>
+          <a class="comment-box__edit-btn">
+            <img
+              class=""
+              src="images/icon-edit.svg"
+              alt=""
+            />
+            <span class="">Edit</span>
           </a>
         </div>
-    `;
+  `;
+    } else {
+      commentBox.innerHTML = `
+      <div class="comment-box__title">
+              <a href="" class="comment-box__user">
+                <div class="comment-box__user-img-wrap">
+                  <img
+                    src="${comment.user.image.webp}"
+                    alt="user image"
+                  />
+                </div>
+                <span class="comment-box__user-name">${comment.user.username}</span>
+              </a>
+              <span class="comment-box__time-ago">${comment.createdAt}</span>
+            </div>
+            <div class="comment-box__text-content">
+              <p>
+                ${comment.content}
+              </p>
+            </div>
+            <div class="comment-box__rate">
+              <div class="comment-box__rate-btn comment-box__rate--plus-wrap">
+                <img
+                  src="images/icon-plus.svg"
+                  alt=""
+                  class="comment-box__rate--plus"
+                />
+              </div>
+              <span class="comment-box__rate-value">${comment.score}</span>
+              <div class="comment-box__rate-btn comment-box__rate--minus-wrap">
+                <img
+                  src="images/icon-minus.svg"
+                  alt=""
+                  class="comment-box__rate--minus"
+                />
+              </div>
+            </div>
+            <a class="comment-box__reply">
+              <img src="images/icon-reply.svg" alt="" />
+              <span>Reply</span>
+            </a>
+          </div>
+      `;
+    }
 
     addCommentReply.innerHTML = `
             <textarea
@@ -252,10 +313,13 @@ function renderComments(data) {
 }
 
 function deployEventListeners(data) {
+  console.log(JSON.parse(data));
   let comments = JSON.parse(data).comments;
   const curUserButtons = document.querySelectorAll(
     ".comment-box__cur-user-buttons"
   );
+  const editCommentBtns = document.querySelectorAll(".comment-box__edit-btn");
+  const addNewComment = document.querySelector(".add-comment__new-comment-btn");
   const commentReplyBtns = document.querySelectorAll(".comment-box__reply");
   const addCommentSendBtns = document.querySelectorAll(
     ".add-comment__send-btn"
@@ -271,18 +335,33 @@ function deployEventListeners(data) {
     }
     if (e.target.classList.contains("modal__btn--yes")) {
       e.preventDefault();
-      document.getElementById(idToDelete).remove();
+
+      if (document.getElementById(idToDelete))
+        document.getElementById(idToDelete).remove();
 
       // DELETE THE COMMENT FROM DATA OBJECT AND UPDATE LOCAL STORAGE
       comments.forEach(function (comment, i) {
         if (comment.id === +idToDelete) {
-          comments[i].splice(i, 1);
+          comments.splice(i, 1);
         }
         comment.replies.forEach(function (reply, i) {
           if (reply.id === +idToDelete) {
             comment.replies.splice(i, 1);
           }
         });
+      });
+
+      // GIVE NEW ID TO COMMENTS
+      let commentIndexId = 1;
+      comments.forEach((comment) => {
+        comment.id = commentIndexId;
+        commentIndexId += 1;
+        if (comment.replies.length > 0) {
+          comment.replies.forEach((reply) => {
+            reply.id = commentIndexId;
+            commentIndexId += 1;
+          });
+        }
       });
 
       const newData = {
@@ -300,13 +379,12 @@ function deployEventListeners(data) {
       curUserBtns.addEventListener("click", (e) => {
         idToDelete = e.target.closest(".comment-box").getAttribute("id");
 
-        if (
-          e.target.closest("a").classList.contains("comment-box__delete-btn")
-        ) {
-          modal.showModal();
-        }
-        if (e.target.closest("a").classList.contains("comment-box__edit-btn")) {
-          console.log("edit button clicked");
+        if (e.target.closest("a")) {
+          if (
+            e.target.closest("a").classList.contains("comment-box__delete-btn")
+          ) {
+            modal.showModal();
+          }
         }
       });
     });
@@ -337,7 +415,155 @@ function deployEventListeners(data) {
     });
   });
 
-  // EVENT LISTENERS FOR SEND/REPLY COMMENT BUTTONS
+  // EVENT LISTENER FOR EDIT COMMENT BUTTON
+
+  editCommentBtns.forEach((editBtn) => {
+    editBtn.addEventListener("click", (e) => {
+      e.preventDefault();
+      console.log(JSON.parse(data));
+      // GET ID OF ELEMENT TO BE EDITED
+      const id = +e.target.closest(".comment-box").getAttribute("id");
+
+      // comments = JSON.parse(data).comments;
+      let commentToEdit = {};
+
+      // SEARCH FOR THE ID OF THE COMMENT TO BE EDITED AND SAVE IT
+      comments.forEach((comment) => {
+        if (comment.id === id) {
+          commentToEdit = comment;
+        }
+        if (comment.replies.length > 0) {
+          comment.replies.forEach((reply) => {
+            if (reply.id === id) {
+              commentToEdit = reply;
+            }
+          });
+        }
+      });
+
+      // REMOVE COMMENT BOX AND INTRODUCE EDIT BOX
+      e.target.closest(".comment-box").insertAdjacentHTML(
+        "afterend",
+        `
+      <div class="comment-edit-box">
+        <div class="comment-box__title">
+          <a href="" class="comment-box__user">
+            <div class="comment-box__user-img-wrap">
+              <img src='${commentToEdit.user.image.webp}' alt="user image" />
+            </div>
+            <span class="comment-box__user-name">${commentToEdit.user.username}</span>
+          </a>
+          <span class="comment-box__you-badge">you</span>
+          <span class="comment-box__time-ago">${commentToEdit.createdAt}</span>
+        </div>
+        <div class="comment-edit-box__text-content">
+          <textarea class="comment-edit-box__text-input" name="" id="" cols="" rows="">@${commentToEdit.replyingTo} ${commentToEdit.content}</textarea>
+        </div>
+        <div class="comment-box__rate">
+          <div class="comment-box__rate-btn comment-box__rate--plus-wrap">
+            <img
+              src="images/icon-plus.svg"
+              alt=""
+              class="comment-box__rate--plus"
+            />
+          </div>
+          <span class="comment-box__rate-value">${commentToEdit.score}</span>
+          <div class="comment-box__rate-btn comment-box__rate--minus-wrap">
+            <img
+              src="images/icon-minus.svg"
+              alt=""
+              class="comment-box__rate--minus"
+            />
+          </div>
+        </div>
+        
+        <button class="comment-box__edit-update-btn">update</button>
+      </div>
+      `
+      );
+
+      // FIND AND FOCUS ON THE INPUT FIELD
+      e.target
+        .closest(".comment-box")
+        .nextElementSibling.querySelector(".comment-edit-box__text-input")
+        .setSelectionRange(-1, -1);
+
+      e.target
+        .closest(".comment-box")
+        .nextElementSibling.querySelector(".comment-edit-box__text-input")
+        .focus();
+
+      e.target.closest(".comment-box").remove();
+
+      // EVENT LISTENER FOR UPDATE COMMENT BUTTON
+      let updateBtns = document.querySelectorAll(
+        ".comment-box__edit-update-btn"
+      );
+
+      updateBtns.forEach((btn) => {
+        btn.addEventListener("click", (e) => {
+          comments = JSON.parse(data).comments;
+          console.log(comments);
+        });
+      });
+    });
+  });
+
+  // EVENT LISTENER FOR ADD NEW COMMENT SEND BUTTON
+  addNewComment.addEventListener("click", (e) => {
+    const newCommentText = e.target
+      .closest(".add-comment")
+      .querySelector("textarea").value;
+
+    // RESET TEXT INPUT
+    e.target.closest(".add-comment").querySelector("textarea").value = "";
+
+    comments = JSON.parse(data).comments;
+
+    const newComment = {
+      id: "",
+      content: newCommentText,
+      createdAt: "just now",
+      replies: [],
+      score: 0,
+      user: {
+        image: {
+          webp: JSON.parse(data).currentUser.image.webp,
+        },
+        username: JSON.parse(data).currentUser.username,
+      },
+    };
+
+    comments.push(newComment);
+
+    // GIVE NEW ID TO COMMENTS
+    let commentIndexId = 1;
+    comments.forEach((comment) => {
+      comment.id = commentIndexId;
+      commentIndexId += 1;
+      if (comment.replies.length > 0) {
+        comment.replies.forEach((reply) => {
+          reply.id = commentIndexId;
+          commentIndexId += 1;
+        });
+      }
+    });
+
+    const newDataObj = {
+      currentUser: JSON.parse(data).currentUser,
+      comments: comments,
+    };
+
+    localStorage.setItem("data", JSON.stringify(newDataObj));
+
+    // REMOVE AND RE-RENDER ALL COMMENTS AND REPLIES
+    commentsContainer.innerHTML = "";
+    renderComments(localStorage.getItem("data"));
+    deployEventListeners(localStorage.getItem("data"));
+    location.reload();
+  });
+
+  // EVENT LISTENERS FOR REPLY COMMENT BUTTONS
   addCommentSendBtns.forEach((btn) => {
     btn.addEventListener("click", (e) => {
       e.preventDefault();

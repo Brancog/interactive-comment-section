@@ -38,13 +38,14 @@
 
   &__send-btn,
   &__new-comment-btn {
-    width: fit-content;
+    text-align: center;
+    width: 6.5rem;
     height: fit-content;
     margin-left: auto;
     background-color: $color-moderate-blue;
     color: $color-white;
     font-weight: $font-weight-semi-bold;
-    padding: 1rem 2rem;
+    padding: 1rem 0rem;
     border-radius: 0.5rem;
     text-transform: uppercase;
     border: none;

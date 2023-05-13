@@ -4,6 +4,36 @@
   flex-direction: column;
 }
 
+.comment-edit-box {
+  display: grid;
+  justify-items: baseline;
+  width: 100%;
+  background-color: hsl(0, 0%, 100%);
+  padding: 1rem;
+  border-radius: 0.5rem;
+  margin-top: 1rem;
+  grid-template-rows: 2.5rem 1fr 2.5rem;
+  grid-template-columns: 1fr 1fr;
+  grid-template-areas: "title title" "text-content text-content" "rate delete-edit";
+}
+.comment-edit-box__text-content {
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  grid-area: text-content;
+  width: 100%;
+}
+.comment-edit-box__text-input {
+  width: 100%;
+  height: 100%;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  border-color: hsl(223, 19%, 93%);
+  border-radius: 0.5rem;
+  resize: none;
+  grid-area: text-input;
+  color: hsl(212, 24%, 26%);
+}
+
 .comment-box {
   display: grid;
   justify-items: baseline;
@@ -18,6 +48,27 @@
 .comment-box__text-content {
   margin-top: 1rem;
   margin-bottom: 1rem;
+}
+.comment-box__edit-update-btn {
+  text-align: center;
+  width: 6.5rem;
+  height: fit-content;
+  margin-left: auto;
+  background-color: #5457b6;
+  color: hsl(0, 0%, 100%);
+  font-weight: 500;
+  padding: 1rem 0rem;
+  border-radius: 0.5rem;
+  text-transform: uppercase;
+  border: none;
+  grid-area: delete-edit;
+  cursor: pointer;
+}
+.comment-box__edit-update-btn:hover {
+  filter: opacity(60%);
+}
+.comment-box--admin {
+  grid-column: 2/3;
 }
 .comment-box--reply {
   grid-column: 2/3;
@@ -172,6 +223,23 @@
     height: 2rem;
     padding: 0;
   }
+  .comment-edit-box {
+    padding: 1.5rem 1.5rem;
+    grid-template-rows: 2.5rem 1fr 1fr;
+    grid-template-columns: 2.5rem 1fr max-content;
+    grid-template-areas: "rate title update" "rate text-content update" "rate text-content update";
+  }
+  .comment-edit-box__text-content {
+    grid-column: 2/6;
+    width: calc(100% - 1.5rem);
+    margin-left: 1.5rem;
+  }
+  .comment-edit-box__text-content__text-input {
+    width: 100%;
+  }
+  .comment-edit-box__edit-update-btn {
+    grid-area: update;
+  }
 }
 .add-comment {
   display: grid;
@@ -205,13 +273,14 @@
   color: hsl(212, 24%, 26%);
 }
 .add-comment__send-btn, .add-comment__new-comment-btn {
-  width: fit-content;
+  text-align: center;
+  width: 6.5rem;
   height: fit-content;
   margin-left: auto;
   background-color: #5457b6;
   color: hsl(0, 0%, 100%);
   font-weight: 500;
-  padding: 1rem 2rem;
+  padding: 1rem 0rem;
   border-radius: 0.5rem;
   text-transform: uppercase;
   border: none;
@@ -319,6 +388,11 @@
 
 .inactive {
   display: none;
+}
+
+.hidden {
+  opacity: 0;
+  visibility: hidden;
 }
 
 @media (min-width: 56.25em) {

@@ -2,6 +2,42 @@
   display: flex;
   flex-direction: column;
 }
+.comment-edit-box {
+  display: grid;
+  justify-items: baseline;
+  width: 100%;
+  background-color: $color-white;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  margin-top: 1rem;
+
+  grid-template-rows: 2.5rem 1fr 2.5rem;
+  grid-template-columns: 1fr 1fr;
+
+  grid-template-areas:
+    "title title"
+    "text-content text-content"
+    "rate delete-edit";
+
+  &__text-content {
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+    grid-area: text-content;
+    width: 100%;
+  }
+
+  &__text-input {
+    width: 100%;
+    height: 100%;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    border-color: $color-light-gray;
+    border-radius: 0.5rem;
+    resize: none;
+    grid-area: text-input;
+    color: $color-dark-blue;
+  }
+}
 .comment-box {
   display: grid;
   justify-items: baseline;
@@ -21,6 +57,30 @@
   &__text-content {
     margin-top: 1rem;
     margin-bottom: 1rem;
+  }
+
+  &__edit-update-btn {
+    text-align: center;
+    width: 6.5rem;
+    height: fit-content;
+    margin-left: auto;
+    background-color: $color-moderate-blue;
+    color: $color-white;
+    font-weight: $font-weight-semi-bold;
+    padding: 1rem 0rem;
+    border-radius: 0.5rem;
+    text-transform: uppercase;
+    border: none;
+    grid-area: delete-edit;
+    cursor: pointer;
+
+    &:hover {
+      filter: opacity(60%);
+    }
+  }
+
+  &--admin {
+    grid-column: 2/3;
   }
 
   &--reply {
@@ -214,6 +274,28 @@
         height: 2rem;
         padding: 0;
       }
+    }
+  }
+  .comment-edit-box {
+    padding: 1.5rem 1.5rem;
+    grid-template-rows: 2.5rem 1fr 1fr;
+    grid-template-columns: 2.5rem 1fr max-content;
+    grid-template-areas:
+      "rate title update"
+      "rate text-content update"
+      "rate text-content update";
+
+    &__text-content {
+      grid-column: 2/6;
+      width: calc(100% - 1.5rem);
+      margin-left: 1.5rem;
+
+      &__text-input {
+        width: 100%;
+      }
+    }
+    &__edit-update-btn {
+      grid-area: update;
     }
   }
 }

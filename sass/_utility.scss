@@ -25,7 +25,10 @@
 .inactive {
   display: none;
 }
-
+.hidden {
+  opacity: 0;
+  visibility: hidden;
+}
 @media (min-width: 56.25em) {
   .reply-wrap {
     grid-template-columns: 5rem 1fr;
