@@ -1,10 +1,10 @@
 "use strict";
 
 //  VARIABLE DECLARATIONS
+const mainContainer = document.querySelector(".container");
 const commentsContainer = document.querySelector(".comments");
 const body = document.querySelector("body");
-const modal = document.querySelector(".modal");
-const modalButtons = document.querySelector(".modal__buttons");
+let idToDelete;
 
 init();
 
@@ -15,6 +15,158 @@ async function init() {
   }
 
   let data = localStorage.getItem("data");
+
+  // GENERATE MODAL ELEMENT
+  if (!document.querySelector(".modal")) {
+    const modal = document.createElement("dialog");
+    modal.innerHTML = `<span class="modal__heading">Delete comment</span>
+    <p class="modal__text-content">
+      Are you sure you want to delete this comment? This will remove the
+      comment and can't be undone.
+    </p>
+    <div class="modal__buttons">
+      <a href="" class="modal__btn modal__btn--no">no, cancel</a>
+      <a href="" class="modal__btn modal__btn--yes">yes, delete</a>
+    </div>`;
+
+    modal.classList.add("modal");
+    modal.setAttribute("id", "modal");
+
+    mainContainer.appendChild(modal);
+  }
+  // EVENT LISTENER FOR MODAL BUTTONS
+
+  const modal = document.querySelector(".modal");
+  const modalButtons = document.querySelector(".modal__buttons");
+  modalButtons.addEventListener("click", (e) => {
+    let comments = JSON.parse(localStorage.getItem("data")).comments;
+    if (e.target.classList.contains("modal__btn--no")) {
+      e.preventDefault();
+      modal.close();
+    }
+    if (e.target.classList.contains("modal__btn--yes")) {
+      e.preventDefault();
+
+      if (document.getElementById(idToDelete))
+        document.getElementById(idToDelete).remove();
+
+      // DELETE THE COMMENT FROM DATA OBJECT AND UPDATE LOCAL STORAGE
+      comments.forEach(function (comment, i) {
+        if (comment.id === +idToDelete) {
+          console.log(idToDelete);
+          comments.splice(i, 1);
+        }
+        comment.replies.forEach(function (reply, i) {
+          if (reply.id === +idToDelete) {
+            console.log(idToDelete);
+            comment.replies.splice(i, 1);
+          }
+        });
+      });
+
+      // GIVE NEW ID TO COMMENTS
+      let commentIndexId = 1;
+      comments.forEach((comment) => {
+        comment.id = commentIndexId;
+        commentIndexId += 1;
+        if (comment.replies.length > 0) {
+          comment.replies.forEach((reply) => {
+            reply.id = commentIndexId;
+            commentIndexId += 1;
+          });
+        }
+      });
+
+      const newData = {
+        currentUser: JSON.parse(data).currentUser,
+        comments: comments,
+      };
+      localStorage.setItem("data", JSON.stringify(newData));
+      e.preventDefault();
+      modal.close();
+      commentsContainer.innerHTML = "";
+      renderComments(localStorage.getItem("data"));
+      deployEventListeners(localStorage.getItem("data"));
+    }
+  });
+
+  // GENERATE NEW COMMENT INPUT BOX
+  if (!document.querySelector(".add-comment")) {
+    const addNewCommentBox = document.createElement("div");
+    addNewCommentBox.innerHTML = `<textarea
+  name="comment"
+  class="add-comment__text-input"
+  cols=""
+  rows="3"
+  placeholder="Add a comment..."
+></textarea>
+<div class="add-comment__user-img-wrap">
+  <img src="images/avatars/image-juliusomo.webp" alt="user image" />
+</div>
+<button class="add-comment__new-comment-btn">send</button>`;
+
+    addNewCommentBox.classList.add("add-comment");
+    mainContainer.appendChild(addNewCommentBox);
+  }
+  const addNewComment = document.querySelector(".add-comment__new-comment-btn");
+
+  // EVENT LISTENER FOR ADD NEW COMMENT SEND BUTTON
+  addNewComment.addEventListener("click", (e) => {
+    e.preventDefault();
+
+    const newCommentText = e.target
+      .closest(".add-comment")
+      .querySelector("textarea").value;
+
+    let comments = JSON.parse(localStorage.getItem("data")).comments;
+
+    const newComment = {
+      id: "",
+      content: newCommentText,
+      createdAt: "just now",
+      replies: [],
+      score: 0,
+      user: {
+        image: {
+          webp: JSON.parse(data).currentUser.image.webp,
+        },
+        username: JSON.parse(data).currentUser.username,
+      },
+    };
+
+    comments.push(newComment);
+
+    // GIVE NEW ID TO COMMENTS
+    let commentIndexId = 1;
+    comments.forEach((comment) => {
+      comment.id = commentIndexId;
+      commentIndexId += 1;
+      if (comment.replies.length > 0) {
+        comment.replies.forEach((reply) => {
+          reply.id = commentIndexId;
+          commentIndexId += 1;
+        });
+      }
+    });
+
+    const newDataObj = {
+      currentUser: JSON.parse(data).currentUser,
+      comments: comments,
+    };
+
+    // console.log(newDataObj);
+
+    localStorage.setItem("data", JSON.stringify(newDataObj));
+
+    // REMOVE AND RE-RENDER ALL COMMENTS AND REPLIES
+    commentsContainer.innerHTML = "";
+
+    renderComments(localStorage.getItem("data"));
+    deployEventListeners(localStorage.getItem("data"));
+    // RESET TEXT INPUT
+    e.target.closest(".add-comment").querySelector("textarea").value = "";
+    // location.reload();
+  });
   renderComments(data);
   deployEventListeners(data);
 }
@@ -313,66 +465,19 @@ function renderComments(data) {
 }
 
 function deployEventListeners(data) {
-  console.log(JSON.parse(data));
   let comments = JSON.parse(data).comments;
   const curUserButtons = document.querySelectorAll(
     ".comment-box__cur-user-buttons"
   );
   const editCommentBtns = document.querySelectorAll(".comment-box__edit-btn");
-  const addNewComment = document.querySelector(".add-comment__new-comment-btn");
+
   const commentReplyBtns = document.querySelectorAll(".comment-box__reply");
   const addCommentSendBtns = document.querySelectorAll(
     ".add-comment__send-btn"
   );
   const commentRateBtns = document.querySelectorAll(".comment-box__rate-btn");
   let replyingTo = "";
-  let idToDelete;
-  // EVENT LISTENER FOR MODAL BUTTONS
-  modalButtons.addEventListener("click", (e) => {
-    if (e.target.classList.contains("modal__btn--no")) {
-      e.preventDefault();
-      modal.close();
-    }
-    if (e.target.classList.contains("modal__btn--yes")) {
-      e.preventDefault();
 
-      if (document.getElementById(idToDelete))
-        document.getElementById(idToDelete).remove();
-
-      // DELETE THE COMMENT FROM DATA OBJECT AND UPDATE LOCAL STORAGE
-      comments.forEach(function (comment, i) {
-        if (comment.id === +idToDelete) {
-          comments.splice(i, 1);
-        }
-        comment.replies.forEach(function (reply, i) {
-          if (reply.id === +idToDelete) {
-            comment.replies.splice(i, 1);
-          }
-        });
-      });
-
-      // GIVE NEW ID TO COMMENTS
-      let commentIndexId = 1;
-      comments.forEach((comment) => {
-        comment.id = commentIndexId;
-        commentIndexId += 1;
-        if (comment.replies.length > 0) {
-          comment.replies.forEach((reply) => {
-            reply.id = commentIndexId;
-            commentIndexId += 1;
-          });
-        }
-      });
-
-      const newData = {
-        currentUser: JSON.parse(data).currentUser,
-        comments: comments,
-      };
-      localStorage.setItem("data", JSON.stringify(newData));
-      e.preventDefault();
-      modal.close();
-    }
-  });
   // EVENT LISTENER FOR COMMENT DELETE BUTTON
   if (curUserButtons) {
     curUserButtons.forEach((curUserBtns) => {
@@ -390,37 +495,12 @@ function deployEventListeners(data) {
     });
   }
 
-  // EVENT LISTENERS FOR COMMENT REPLY BUTTONS
-  commentReplyBtns.forEach((btn) => {
-    btn.addEventListener("click", (e) => {
-      e.preventDefault();
-      const addCommentReplies = document.querySelectorAll(
-        ".add-comment--reply"
-      );
-      addCommentReplies.forEach((replyInput) => {
-        replyInput.classList.add("inactive");
-      });
-
-      e.target.closest(".comment-box").nextSibling.classList.remove("inactive");
-      replyingTo = e.target
-        .closest(".comment-box")
-        .querySelector(".comment-box__user-name").textContent;
-      e.target
-        .closest(".comment-box")
-        .nextSibling.querySelector("textarea").value = `@${replyingTo}, `;
-      e.target
-        .closest(".comment-box")
-        .nextSibling.querySelector("textarea")
-        .focus();
-    });
-  });
-
   // EVENT LISTENER FOR EDIT COMMENT BUTTON
 
   editCommentBtns.forEach((editBtn) => {
     editBtn.addEventListener("click", (e) => {
       e.preventDefault();
-      console.log(JSON.parse(data));
+      comments = JSON.parse(localStorage.getItem("data")).comments;
       // GET ID OF ELEMENT TO BE EDITED
       const id = +e.target.closest(".comment-box").getAttribute("id");
 
@@ -457,7 +537,7 @@ function deployEventListeners(data) {
           <span class="comment-box__time-ago">${commentToEdit.createdAt}</span>
         </div>
         <div class="comment-edit-box__text-content">
-          <textarea class="comment-edit-box__text-input" name="" id="" cols="" rows="">@${commentToEdit.replyingTo} ${commentToEdit.content}</textarea>
+          <textarea class="comment-edit-box__text-input" name="" id="" cols="" rows="">@${commentToEdit.replyingTo}, ${commentToEdit.content}</textarea>
         </div>
         <div class="comment-box__rate">
           <div class="comment-box__rate-btn comment-box__rate--plus-wrap">
@@ -502,65 +582,79 @@ function deployEventListeners(data) {
 
       updateBtns.forEach((btn) => {
         btn.addEventListener("click", (e) => {
-          comments = JSON.parse(data).comments;
-          console.log(comments);
+          const updatedCommentText = e.target
+            .closest(".comment-edit-box")
+            .querySelector("textarea")
+            .value.split(", ")
+            .pop();
+
+          const commentEditBox = document.querySelector(".comment-edit-box");
+          commentEditBox.remove();
+
+          const editedReply = {
+            id: commentToEdit.id,
+            content: updatedCommentText,
+            createdAt: "just now",
+            score: commentToEdit.score,
+            replyingTo: commentToEdit.replyingTo,
+            replies: [],
+            user: {
+              image: {
+                webp: JSON.parse(data).currentUser.image.webp,
+              },
+              username: JSON.parse(data).currentUser.username,
+            },
+          };
+          comments.forEach((comment, i) => {
+            if (comment.id === commentToEdit.id) {
+              comments.splice(i, 1);
+              comments.splice(i, 0, editedReply);
+            }
+            if (comment.replies.length > 0) {
+              comment.replies.forEach((reply, j) => {
+                if (reply.id === commentToEdit.id) {
+                  comment.replies.splice(j, 1);
+                  comment.replies.splice(j, 0, editedReply);
+                }
+              });
+            }
+          });
+          const newDataObj = {
+            currentUser: JSON.parse(data).currentUser,
+            comments: comments,
+          };
+          localStorage.setItem("data", JSON.stringify(newDataObj));
+          commentsContainer.innerHTML = "";
+          renderComments(localStorage.getItem("data"));
+          deployEventListeners(localStorage.getItem("data"));
         });
       });
     });
   });
 
-  // EVENT LISTENER FOR ADD NEW COMMENT SEND BUTTON
-  addNewComment.addEventListener("click", (e) => {
-    const newCommentText = e.target
-      .closest(".add-comment")
-      .querySelector("textarea").value;
+  // EVENT LISTENERS FOR COMMENT REPLY BUTTONS
+  commentReplyBtns.forEach((btn) => {
+    btn.addEventListener("click", (e) => {
+      e.preventDefault();
+      const addCommentReplies = document.querySelectorAll(
+        ".add-comment--reply"
+      );
+      addCommentReplies.forEach((replyInput) => {
+        replyInput.classList.add("inactive");
+      });
 
-    // RESET TEXT INPUT
-    e.target.closest(".add-comment").querySelector("textarea").value = "";
-
-    comments = JSON.parse(data).comments;
-
-    const newComment = {
-      id: "",
-      content: newCommentText,
-      createdAt: "just now",
-      replies: [],
-      score: 0,
-      user: {
-        image: {
-          webp: JSON.parse(data).currentUser.image.webp,
-        },
-        username: JSON.parse(data).currentUser.username,
-      },
-    };
-
-    comments.push(newComment);
-
-    // GIVE NEW ID TO COMMENTS
-    let commentIndexId = 1;
-    comments.forEach((comment) => {
-      comment.id = commentIndexId;
-      commentIndexId += 1;
-      if (comment.replies.length > 0) {
-        comment.replies.forEach((reply) => {
-          reply.id = commentIndexId;
-          commentIndexId += 1;
-        });
-      }
+      e.target.closest(".comment-box").nextSibling.classList.remove("inactive");
+      replyingTo = e.target
+        .closest(".comment-box")
+        .querySelector(".comment-box__user-name").textContent;
+      e.target
+        .closest(".comment-box")
+        .nextSibling.querySelector("textarea").value = `@${replyingTo}, `;
+      e.target
+        .closest(".comment-box")
+        .nextSibling.querySelector("textarea")
+        .focus();
     });
-
-    const newDataObj = {
-      currentUser: JSON.parse(data).currentUser,
-      comments: comments,
-    };
-
-    localStorage.setItem("data", JSON.stringify(newDataObj));
-
-    // REMOVE AND RE-RENDER ALL COMMENTS AND REPLIES
-    commentsContainer.innerHTML = "";
-    renderComments(localStorage.getItem("data"));
-    deployEventListeners(localStorage.getItem("data"));
-    location.reload();
   });
 
   // EVENT LISTENERS FOR REPLY COMMENT BUTTONS
@@ -631,6 +725,8 @@ function deployEventListeners(data) {
         comments: comments,
       };
 
+      console.log(newDataObj);
+
       localStorage.setItem("data", JSON.stringify(newDataObj));
 
       // REMOVE AND RE-RENDER ALL COMMENTS AND REPLIES
@@ -664,7 +760,7 @@ function deployEventListeners(data) {
     if (rateActionBtn.classList.contains("comment-box__rate--plus-wrap")) {
       ratingVal.textContent = +ratingVal.textContent + 1;
 
-      comments.forEach(function (comment, i) {
+      newData.comments.forEach(function (comment, i) {
         if (comment.id === ratedCommentId) {
           comment.score += 1;
           localStorage.setItem("data", JSON.stringify(newData));
