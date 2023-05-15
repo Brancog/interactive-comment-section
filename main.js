@@ -469,6 +469,7 @@ function deployEventListeners(data) {
   const curUserButtons = document.querySelectorAll(
     ".comment-box__cur-user-buttons"
   );
+  const commentScoreVal = document.querySelectorAll(".comment-box__rate-value");
   const editCommentBtns = document.querySelectorAll(".comment-box__edit-btn");
 
   const commentReplyBtns = document.querySelectorAll(".comment-box__reply");
@@ -671,7 +672,7 @@ function deployEventListeners(data) {
       e.target.closest(".add-comment").classList.add("inactive");
       // SELECT THE PREVIOUS COMMENT BOX AND ADD A NEW ONE JUST BENEATH
 
-      comments = JSON.parse(data).comments;
+      comments = JSON.parse(localStorage.getItem("data")).comments;
 
       const repliedCommentId = +e.target
         .closest(".add-comment")
@@ -738,6 +739,8 @@ function deployEventListeners(data) {
       //   .previousSibling.insertAdjacentHTML("afterend",newComment);
     });
   });
+
+  // EVENT LISTENER FOR COMMENT SCORE VALUE
 
   // EVENT LISTENERS FOR COMMENT RATING BUTTONS
   commentRateBtns.forEach((rateBtn) =>
