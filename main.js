@@ -53,12 +53,10 @@ async function init() {
       // DELETE THE COMMENT FROM DATA OBJECT AND UPDATE LOCAL STORAGE
       comments.forEach(function (comment, i) {
         if (comment.id === +idToDelete) {
-          console.log(idToDelete);
           comments.splice(i, 1);
         }
         comment.replies.forEach(function (reply, i) {
           if (reply.id === +idToDelete) {
-            console.log(idToDelete);
             comment.replies.splice(i, 1);
           }
         });
@@ -153,8 +151,6 @@ async function init() {
       currentUser: JSON.parse(data).currentUser,
       comments: comments,
     };
-
-    // console.log(newDataObj);
 
     localStorage.setItem("data", JSON.stringify(newDataObj));
 
@@ -725,8 +721,6 @@ function deployEventListeners(data) {
         currentUser: JSON.parse(data).currentUser,
         comments: comments,
       };
-
-      console.log(newDataObj);
 
       localStorage.setItem("data", JSON.stringify(newDataObj));
 

@@ -190,7 +190,7 @@
   filter: brightness(210%);
 }
 
-@media (min-width: 56.25em) {
+@media (min-width: 43.75em) {
   .comment-box {
     padding: 1.5rem 1.5rem;
     grid-template-rows: 2.5rem 1fr;
@@ -291,7 +291,7 @@
   filter: opacity(60%);
 }
 
-@media (min-width: 56.25em) {
+@media (min-width: 43.75em) {
   .add-comment {
     padding: 1.5rem;
     grid-template-columns: max-content 1fr max-content;
@@ -399,7 +399,7 @@
   color: hsl(358, 79%, 66%) !important;
 }
 
-@media (min-width: 56.25em) {
+@media (min-width: 43.75em) {
   .reply-wrap {
     grid-template-columns: 5rem 1fr;
   }
