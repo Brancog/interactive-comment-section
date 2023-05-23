@@ -30,8 +30,8 @@ Users should be able to:
 
 ### Links
 
-- Solution URL:
-- Live Site URL:
+- Solution URL:https://www.frontendmentor.io/solutions/javascript-and-scss-7hfXhiDZ3Z
+- Live Site URL: https://brancog.github.io/interactive-comments-section/
 
 ### Built with
 
