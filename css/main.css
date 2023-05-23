@@ -49,6 +49,12 @@
   margin-top: 1rem;
   margin-bottom: 1rem;
 }
+.comment-box__text-content a,
+.comment-box__text-content a:link,
+.comment-box__text-content a:visited {
+  font-weight: 500;
+  color: #5457b6;
+}
 .comment-box__edit-update-btn {
   text-align: center;
   width: 6.5rem;

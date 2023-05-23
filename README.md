@@ -1,6 +1,6 @@
-# Frontend Mentor - Social media dashboard with theme switcher solution
+# Frontend Mentor - Interactive comments section solution
 
-This is a solution to the [Social media dashboard with theme switcher challenge on Frontend Mentor](https://www.frontendmentor.io/challenges/social-media-dashboard-with-theme-switcher-6oY8ozp_H). Frontend Mentor challenges help you improve your coding skills by building realistic projects.
+This is a solution to the [Interactive comments section challenge on Frontend Mentor](https://www.frontendmentor.io/challenges/interactive-comments-section-iG1RugEG9). Frontend Mentor challenges help you improve your coding skills by building realistic projects.
 
 ## Table of contents
 
@@ -17,9 +17,12 @@ This is a solution to the [Social media dashboard with theme switcher challenge 
 
 Users should be able to:
 
-- View the optimal layout for the site depending on their device's screen size
+- View the optimal layout for the app depending on their device's screen size
 - See hover states for all interactive elements on the page
-- Toggle color theme to their preference
+- Create, Read, Update, and Delete comments and replies
+- Upvote and downvote comments
+- **Bonus**: If you're building a purely front-end project, use `localStorage` to save the current state in the browser that persists when the browser is refreshed.
+- **Bonus**: Instead of using the `createdAt` strings from the `data.json` file, try using timestamps and dynamically track the time since the comment or reply was posted.
 
 ### Screenshot
 
@@ -27,11 +30,12 @@ Users should be able to:
 
 ### Links
 
-- Solution URL: https://www.frontendmentor.io/solutions/css-gridflexbox-and-javascript-wjc2MOWStM
-- Live Site URL: https://brancog.github.io/social-media-dashboard-with-theme-switcher/
+- Solution URL:
+- Live Site URL:
 
 ### Built with
 
+- Javascript
 - Semantic HTML5 markup
 - CSS custom properties
 - Flexbox

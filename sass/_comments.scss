@@ -57,6 +57,13 @@
   &__text-content {
     margin-top: 1rem;
     margin-bottom: 1rem;
+
+    a,
+    a:link,
+    a:visited {
+      font-weight: $font-weight-semi-bold;
+      color: $color-moderate-blue;
+    }
   }
 
   &__edit-update-btn {
